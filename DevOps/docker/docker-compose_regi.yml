@@ -1,0 +1,14 @@
+version: '3'
+services:
+  registry:
+    image: registry:2
+    restart: always
+    container_name: registry-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - '$GITLAB_HOME/data:/var/lib/registry'
+      - '$GITLAB_HOME/certs:/certs'
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/gitlab.crt
+      REGISTRY_HTTP_TLS_KEY: /certs/gitlab.key

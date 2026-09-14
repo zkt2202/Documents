@@ -1,0 +1,11 @@
+---
+- name: Test roles
+  hosts: webnginx
+  become: true
+  roles:
+    - nginxCentOS
+    - geerlingguy.nodejs
+  tasks:
+    - name: Start service nginx
+      service: name=nginx state=started enabled=yes
+      ignore_errors: yes

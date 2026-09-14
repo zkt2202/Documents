@@ -1,0 +1,17 @@
+- hosts: all
+  become: true
+  tasks:
+  - name: "Show ansible Facts:"
+    debug:
+    var: ansible_facts['distribution']
+
+  - name: Install docker on Debian(Ubuntu)
+    block:
+      - name: Update all
+        apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+      - name: Upgrade all packages
+        apt: upgrade=dist force_apt_get=yes
+      - name: "Block show err on Ubuntu"
+        debug:
+         var: err 
+     when: ansible_facts['distribution'] == "Ubuntu"

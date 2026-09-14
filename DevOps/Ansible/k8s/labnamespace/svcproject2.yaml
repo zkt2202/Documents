@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+ name: svcproject2
+ namespace: project1
+spec:
+ type: NodePort
+ ports:
+  - name: port1
+    port: 80
+    nodePort: 31081

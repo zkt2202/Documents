@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: python2
+ namespace: project2
+ labels:
+  name: podapp2
+spec:
+ containers:
+ - name: python2
+   image: gitlabcmc.ccnapnh.fun:5050/thanhnk/pythonapp/main:latest

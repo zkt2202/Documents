@@ -1,0 +1,8 @@
+[webserver]
+client8 ansible_host=10.211.55.8 ansible_user=zkt
+
+[redhat]
+10.211.55.7 ansible_user=zkt
+
+[all:vars]
+ntp_server=vn.pool.ntp.org

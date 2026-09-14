@@ -1,0 +1,7 @@
+- hosts: webserver
+  gather_facts: true
+  tasks:
+    #- name: "Show ansible Facts"
+    - name: "Show python versions on Target "
+      debug:
+        var: ansible_facts['python_version']

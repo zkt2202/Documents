@@ -1,0 +1,19 @@
+- name: Test variable
+  hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: true
+
+  tasks:
+   - name: "Show target server IP"
+     debug:
+      # msg: "Target system (Web server) IP = {{inventory_hostname}}"
+       var: inventory_hostname
+
+   - name: Unconditionally reboot the machine with all defaults
+     ansible.builtin.reboot:
+
+   - name: "Shutdown a machine with shutdown command in unusual place"
+     community.general.shutdown:
+       delay: 60

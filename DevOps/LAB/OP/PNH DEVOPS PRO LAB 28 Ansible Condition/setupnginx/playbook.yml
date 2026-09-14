@@ -1,0 +1,41 @@
+- name: Test Install nginx
+  hosts: all
+  become: true
+  tasks:
+    - name: "Show ansible Facts:"
+      debug:
+        var: ansible_facts['distribution']
+
+    - name: Debian
+      block:
+        - name: Upgrade all packages on servers
+          apt:
+            update_cache: yes
+            upgrade: dist
+            force_apt_get: yes
+            cache_valid_time: 3600
+
+        - name: Install NGINX on Ubuntu
+          apt: name=nginx update_cache=yes state=latest force_apt_get=yes
+        - name: Start service nginx
+          service: name=nginx state=started enabled=yes
+        - name: "Block show err on Ubuntu"
+          debug:
+            var: err
+      when: ansible_facts['distribution'] == "Debian"
+
+    - name: Redhat
+      block:
+        - name: Install EPEL repo on CentOS
+          yum: name=epel-release state=present
+        - name: Install NGINX on CentOS
+          yum: name=nginx update_cache=yes state=latest
+        - name: Start service nginx on Centos
+          service:
+            name: nginx
+            enabled: yes
+            state: started
+        - name: "Block show err on Centos"
+          debug:
+            var: err
+      when: ansible_facts['distribution'] == "CentOS"

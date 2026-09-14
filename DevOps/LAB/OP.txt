@@ -1,0 +1,202 @@
+.
+
+├── OP
+│   ├── PNH DEVOPS PRO LAB 20 GIT command
+│   │   └── PNH DEVOPS PRO LAB 20 GIT command_page-0001.jpg
+│   ├── PNH DEVOPS PRO LAB 21 GIT to Github
+│   │   └── PNH DEVOPS PRO LAB 21 GIT to Github_page-0001.jpg
+│   ├── PNH DEVOPS PRO LAB 22 GitLab
+│   │   ├── PNH DEVOPS PRO LAB 22 GitLab_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 22 GitLab_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 23 GitLab LDAP
+│   │   ├── PNH DEVOPS PRO LAB 23 GitLab LDAP_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 23 GitLab LDAP_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 23 GitLab LDAP_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 24 CICD Amplify
+│   │   ├── PNH DEVOPS PRO LAB 24 CICD Amplify aws_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 24 CICD Amplify aws_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 24 CICD Amplify aws_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 25 Ansible
+│   │   ├── PNH DEVOPS PRO LAB 25 Ansible_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 25 Ansible_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 26 Debug Vars
+│   │   ├── PNH DEVOPS PRO LAB 26 Debug Vars_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 26 Debug Vars_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 26 Debug Vars_page-0003.jpg
+│   │   └── PNH DEVOPS PRO LAB 26 Debug Vars_page-0004.jpg
+│   ├── PNH DEVOPS PRO LAB 27 Ansible Template 1 nginx
+│   │   ├── PNH DEVOPS PRO LAB 27 Ansible Template 1 nginx_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 27 Ansible Template 1 nginx_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 27 Ansible Template 1 nginx_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 28 Ansible Condition
+│   │   ├── PNH DEVOPS PRO LAB 28 Ansible Condition_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 28 Ansible Condition_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 29 Ansible remove nginx
+│   │   └── PNH DEVOPS PRO LAB 29 Ansible remove nginx_page-0001.jpg
+│   ├── PNH DEVOPS PRO LAB 30 Ansible Role
+│   │   └── PNH DEVOPS PRO LAB 30 Ansible Role_page-0001.jpg
+│   ├── PNH DEVOPS PRO LAB 31 Ansible Continuous Delivery
+│   │   ├── PNH DEVOPS PRO LAB 31 Ansible Continuous Delivery_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 31 Ansible Continuous Delivery_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 31 Ansible Continuous Delivery_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 32 Docker bai 1
+│   │   ├── PNH DEVOPS PRO LAB 32 Docker bai 1_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 32 Docker bai 1_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 33 Docker bai 2
+│   │   └── PNH DEVOPS PRO LAB 33 Docker bai 2_page-0001.jpg
+│   ├── PNH DEVOPS PRO LAB 34 Docker bai 3
+│   │   ├── PNH DEVOPS PRO LAB 34 Docker bai 3_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 34 Docker bai 3_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 35 Docker bai 4 Log
+│   │   ├── PNH DEVOPS PRO LAB 35 Docker bai 4 Log_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 35 Docker bai 4 Log_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 36 Docker bai 5 Volume
+│   │   ├── PNH DEVOPS PRO LAB 36 Docker bai 5 Volume_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 36 Docker bai 5 Volume_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 37 Docker bai 6 Docker mysql
+│   │   ├── PNH DEVOPS PRO LAB 37 Docker bai 6 Docker mysql_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 37 Docker bai 6 Docker mysql_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 38 Docker bai 7 Dockerfile
+│   │   ├── PNH DEVOPS PRO LAB 38 Docker bai 7 Dockerfile_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 38 Docker bai 7 Dockerfile_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 39 Docker bai 8 Docker Compose
+│   │   ├── PNH DEVOPS PRO LAB 39 Docker bai 8 Docker Compose_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 39 Docker bai 8 Docker Compose_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 39 Docker bai 8 Docker Compose_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 40 Docker bai 9 Docker swarm_
+│   │   ├── PNH DEVOPS PRO LAB 40 Docker bai 9 Docker swarm_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 40 Docker bai 9 Docker swarm_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 40 Docker bai 9 Docker swarm_page-0003.jpg
+│   │   └── PNH DEVOPS PRO LAB 40 Docker bai 9 Docker swarm_page-0004.jpg
+│   ├── PNH DEVOPS PRO LAB 41 Mysql Cluster NDB
+│   │   ├── PNH DEVOPS PRO LAB 41 Mysql Cluster NDB_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 41 Mysql Cluster NDB_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 42 Cai dat GitlabRunner
+│   │   ├── PNH DEVOPS PRO LAB 42 Cai dat GitlabRunner_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 42 Cai dat GitlabRunner_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 43 CICD GitLab Docker
+│   │   ├── PNH DEVOPS PRO LAB 43 CICD GitLab Docker_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 43 CICD GitLab Docker_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 43 CICD GitLab Docker_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 44 CICD GitLab Auto deploy
+│   │   ├── PNH DEVOPS PRO LAB 44 CICD GitLab Auto deploy_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 44 CICD GitLab Auto deploy_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 44 CICD GitLab Auto deploy_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 45 CICD GitLab Auto deploy swarm
+│   │   ├── PNH DEVOPS PRO LAB 45 CICD GitLab Auto deploy swarm_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 45 CICD GitLab Auto deploy swarm_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 45 CICD GitLab Auto deploy swarm_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 45 CICD GitLab Auto deploy swarm_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 45 CICD GitLab Auto deploy swarm_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 46 K8s Khai niem
+│   │   ├── PNH DEVOPS PRO LAB 46 K8s Khai niem_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 46 K8s Khai niem_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 47 K8s - Install ansible
+│   │   ├── PNH DEVOPS PRO LAB 47 K8s - Install ansible_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 47 K8s - Install ansible_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 47 K8s - Install ansible_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 47 K8s - Install ansible_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 47 K8s - Install ansible_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 48 K8s - Networking
+│   │   ├── PNH DEVOPS PRO LAB 48 K8s - Networking_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 48 K8s - Networking_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 49 K8s - Namespace
+│   │   ├── PNH DEVOPS PRO LAB 49 K8s - Namespace_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 49 K8s - Namespace_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 49 K8s - Namespace_page-0003.jpg
+│   │   └── PNH DEVOPS PRO LAB 49 K8s - Namespace_page-0004.jpg
+│   ├── PNH DEVOPS PRO LAB 50 K8s - Config Map secret
+│   │   ├── PNH DEVOPS PRO LAB 50 K8s - Config Map secret_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 50 K8s - Config Map secret_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 51 K8s - Deployment
+│   │   ├── PNH DEVOPS PRO LAB 51 K8s - Deployment_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 51 K8s - Deployment_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 51 K8s - Deployment_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 52 K8s - Volume
+│   │   ├── PNH DEVOPS PRO LAB 52 K8s - Volume_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 52 K8s - Volume_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 52 K8s - Volume_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 52 K8s - Volume_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 52 K8s - Volume_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 53 K8s - Volume 2
+│   │   ├── PNH DEVOPS PRO LAB 53 K8s - Volume 2_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 53 K8s - Volume 2_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 53 K8s - Volume 2_page-0003.jpg
+│   │   └── PNH DEVOPS PRO LAB 53 K8s - Volume 2_page-0004.jpg
+│   ├── PNH DEVOPS PRO LAB 54 K8s - Volume NFS ubuntu
+│   │   ├── PNH DEVOPS PRO LAB 54 K8s - Volume NFS ubuntu_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 54 K8s - Volume NFS ubuntu_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 54 K8s - Volume NFS ubuntu_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 54 K8s - Volume NFS ubuntu_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 54 K8s - Volume NFS ubuntu_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 55 K8s - ServiceAccount
+│   │   ├── PNH DEVOPS PRO LAB 55 K8s - ServiceAccount_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 55 K8s - ServiceAccount_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 55 K8s - ServiceAccount_page-0003.jpg
+│   │   └── PNH DEVOPS PRO LAB 55 K8s - ServiceAccount_page-0004.jpg
+│   ├── PNH DEVOPS PRO LAB 56 K8s - ingress NGINX
+│   │   ├── PNH DEVOPS PRO LAB 56 K8s - ingress NGINX_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 56 K8s - ingress NGINX_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 56 K8s - ingress NGINX_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 56 K8s - ingress NGINX_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 56 K8s - ingress NGINX_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 57 K8s - Rancher
+│   │   ├── PNH DEVOPS PRO LAB 57 K8s - Rancher_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 57 K8s - Rancher_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 57 K8s - Rancher_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 57 K8s - Rancher_page-0004.jpg
+│   │   ├── PNH DEVOPS PRO LAB 57 K8s - Rancher_page-0005.jpg
+│   │   └── PNH DEVOPS PRO LAB 57 K8s - Rancher_page-0006.jpg
+│   ├── PNH DEVOPS PRO LAB 58 K8s - Monitor- Metrics
+│   │   ├── PNH DEVOPS PRO LAB 58 K8s - Log - Metrics -2_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 58 K8s - Log - Metrics -2_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 58 K8s - Log - Metrics -2_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 58 K8s - Log - Metrics -2_page-0004.jpg
+│   │   ├── PNH DEVOPS PRO LAB 58 K8s - Log - Metrics -2_page-0005.jpg
+│   │   └── PNH DEVOPS PRO LAB 58 K8s - Log - Metrics -2_page-0006.jpg
+│   ├── PNH DEVOPS PRO LAB 59 K8s - Log - Loki
+│   │   ├── PNH DEVOPS PRO LAB 59 K8s - Log - Metrics - Loki_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 59 K8s - Log - Metrics - Loki_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 59 K8s - Log - Metrics - Loki_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 59 K8s - Log - Metrics - Loki_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 59 K8s - Log - Metrics - Loki_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 60 Helm Chart nginx
+│   │   ├── PNH DEVOPS PRO LAB 60 Helm Chart nginx_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 60 Helm Chart nginx_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 60 Helm Chart nginx_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 60 Helm Chart nginx_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 60 Helm Chart nginx_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 61 Jenkins
+│   │   ├── PNH DEVOPS PRO LAB 61 Jenkins_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 61 Jenkins_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 61 Jenkins_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 61 Jenkins_page-0004.jpg
+│   │   └── PNH DEVOPS PRO LAB 61 Jenkins_page-0005.jpg
+│   ├── PNH DEVOPS PRO LAB 62 Jenkins - Agent
+│   │   ├── PNH DEVOPS PRO LAB 62 Jenkins - Agent_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 62 Jenkins - Agent_page-0002.jpg
+│   │   └── PNH DEVOPS PRO LAB 62 Jenkins - Agent_page-0003.jpg
+│   ├── PNH DEVOPS PRO LAB 63 Git workflow
+│   │   ├── PNH DEVOPS PRO LAB 63 Git workflow_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 63 Git workflow_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 63 Git workflow_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 63 Git workflow_page-0004.jpg
+│   │   ├── PNH DEVOPS PRO LAB 63 Git workflow_page-0005.jpg
+│   │   ├── PNH DEVOPS PRO LAB 63 Git workflow_page-0006.jpg
+│   │   └── PNH DEVOPS PRO LAB 63 Git workflow_page-0007.jpg
+│   ├── PNH DEVOPS PRO LAB 64 Final Lab
+│   │   ├── PNH DEVOPS PRO LAB 64 Final Lab_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO LAB 64 Final Lab_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO LAB 64 Final Lab_page-0003.jpg
+│   │   ├── PNH DEVOPS PRO LAB 64 Final Lab_page-0004.jpg
+│   │   ├── PNH DEVOPS PRO LAB 64 Final Lab_page-0005.jpg
+│   │   └── PNH DEVOPS PRO LAB 64 Final Lab_page-0006.jpg
+│   └── PNH DEVOPS PRO LAB 65 IaC Terraform
+│       ├── PNH DEVOPS PRO LAB 65 IaC Terraform_page-0001.jpg
+│       ├── PNH DEVOPS PRO LAB 65 IaC Terraform_page-0002.jpg
+│       ├── PNH DEVOPS PRO LAB 65 IaC Terraform_page-0003.jpg
+│       ├── PNH DEVOPS PRO LAB 65 IaC Terraform_page-0004.jpg
+│       └── PNH DEVOPS PRO LAB 65 IaC Terraform_page-0005.jpg
+└── file.txt
+
+68 directories, 187 files

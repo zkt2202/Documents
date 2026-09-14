@@ -1,0 +1,15 @@
+#[k8s]
+#192.168.9.104:8022 kubernetes_role="control_plane"  ansible_user=srv
+#192.168.9.105:8022 kubernetes_role="node"  ansible_user=srv
+#192.168.2.15 kubernetes_role="node"  ansible_user=srv
+#worker ansible_host=10.211.55.10:2222 ansible_user=srv
+
+
+
+[masters]
+192.168.9.106 kubernetes_role="control_plane" ansible_user=srv
+
+[workers]
+192.168.9.108 kubernetes_role="node" ansible_user=srv
+192.168.9.109 kubernetes_role="node" ansible_user=srv
+

@@ -1,0 +1,163 @@
+### ReturnRei's youtube video provides a very helpful tutorial
+### https://www.youtube.com/watch?v=dKvetujHjYQ&t=737s
+
+#### PLEASE NOTE::
+#### I created the Arch (target) VM (from the get go) and booted that with an Ubuntu CD
+#### I think it's easier to do it that rather than to mess around with an existing vm
+
+## his useful links
+# https://wiki.archlinux.org/title/Install_Arch_Linux_from_existing_Linux#Using_a_chroot_environment
+# https://archlinuxarm.org/platforms/armv8/generic
+# https://www.reddit.com/r/archlinux/comments/6kwt61/systemd_doesnt_create_machineid_during/
+# https://arm.endeavouros.com/endeavouros-arm-install/
+
+#
+## I don't make/use arch install scripts
+## however ReturnRei's way is the only way I can get
+## Arch working on my M1 Pro MacBook lol
+#
+
+# note I changed some words/commands to suit my locale (someone from the UK)
+
+## download the the thing
+cd ~/Downloads
+wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
+
+sudo add-apt-repository universe
+sudo add-apt-repository multiverse
+sudo apt update
+sudo apt install libarchive-tools
+
+sudo bash
+PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+TGTDEV="/dev/sda"
+
+# partitions the drive
+## do not run if you already done this manually
+prep-disk() {
+    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' <<E_FDISK | fdisk ${TGTDEV}
+        g # clear and and make the GPT table
+        n # new partition for EFI
+        1 # partition number 1
+        # (default) - start at beginning of disk 
+        +1000M # 1GB (1000MB) boot parttion
+        t # set partition '1' type
+        1 # to "EFI System"
+        n # new partition
+        2 # partition number 2
+        # (default) - start immediately after preceding partition
+        # (default) - extend partition to end of disk
+        w # write the partition table to disc
+        q # and we're done
+E_FDISK
+    
+    mkfs.ext4 ${TGTDEV}2 -L "arch"
+    mkfs.vfat ${TGTDEV}1 -n "efi arm"
+
+    mkdir /target
+    mount ${TGTDEV}2 /target
+    mkdir /target/boot
+    mount ${TGTDEV}1 /target/boot
+}
+
+
+
+prep-disk ## RUNNING THIS WILL ERASE THE DATA IF YOUR USING AN EXISTING VM
+          ## DO NOT RUN IF YOU ALREADY PARTITIONED YOUR DRIVE
+
+bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /target
+echo "$TGTDEV" > /target/.initial_dev.text
+
+## Get into chroot
+mount --bind /target /target && 
+    cd /target && 
+    rm /target/etc/resolv.conf && 
+    cp /etc/resolv.conf etc && 
+    mount -t proc /proc proc && 
+    mount --make-rslave --rbind /sys sys && 
+    mount --make-rslave --rbind /dev dev && 
+    mount --make-rslave --rbind /run run
+
+chroot /target /bin/bash #<<"E_CHROOT_ENV"
+PS1='\[\033[01;31m\](chroot)\[\033[00m\] \[\033[01;34m\]\w\[\033[00m\]\$ '
+
+chmod 755 /
+
+TGTDEV="$(cat /.initial_dev.text)" # remember the TGTDEV before chrooting
+mount ${TGTDEV}1 /boot
+
+## prepare the pacman keys
+pacman-key --init
+pacman-key --populate archlinuxarm
+
+## config the install
+pacman -Syy --noconfirm vim zsh dash
+
+# you can run this if you want pacman to look cool and fast
+sed -i '/^#\(Color\|VerbosePkgLists\|ParallelDownloads\)/s/^#//' /etc/pacman.conf
+# sets the simultaneous downloads to 6
+sed -i 's/^ParallelDownloads = .*/ParallelDownloads = 6/' /etc/pacman.conf
+# cool 8-bit pacman effect!
+sed -i '/^#\?ParallelDownloads = /a ILoveCandy' /etc/pacman.conf 
+
+vim /etc/pacman.conf # do your own pacman config
+
+EDITOR="vim"
+
+## commands for install
+pacman -Su --needed --noconfirm base linux linux-firmware arch-install-scripts \
+                       efibootmgr networkmanager network-manager-applet \
+                       dialog os-prober mtools dosfstools base-devel \
+                       linux-headers git go nano tree
+
+## internal arch system config
+dbus-uuidgen > /etc/machine-id ## fix for missing machine-id 
+genfstab -U / | grep -e "UUID\|${TGTDEV}" >> /etc/fstab
+ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime ## this is for if your located in Europe with London's timezone
+hwclock --systohc
+
+# edit /etc/locale.gen to select your locales
+sed -i '/^#en_\(US\|GB\)[.]UTF-8/s/^#//' /etc/locale.gen
+locale-gen
+echo "LANG=en_GB.UTF-8" >> /etc/locale.conf ## assuming you want this locale
+echo "parallels-arch-vm" >> /etc/hostname
+
+groupadd sudo
+useradd -m -G sudo -s /bin/zsh someuser
+
+visudo # give yourself sudo access before rebooting
+sed -i '/^#\s\+%sudo/s/^#\s\+//' /etc/sudoers ## scripty version
+
+ln -sfT dash /usr/bin/sh # optional: makes your system bit more effcient
+
+cat <<E_HOSTS > /etc/hosts
+
+127.0.0.1    localhost
+::1          localhost
+
+E_HOSTS
+
+systemctl enable NetworkManager
+
+### setting up systemd-boot
+bootctl --path=/boot install
+
+cat <<E_BLOADER > /boot/loader/loader.conf
+timeout 3
+#console-mode keep
+default arch*
+E_BLOADER
+
+cat <<E_BENTRY > /boot/loader/entries/arch.conf
+title	arch linux
+linux	/Image
+initrd	/initramfs-linux.img
+options root=UUID=$(findmnt / -no UUID) rw quiet loglevel=3
+E_BENTRY
+
+# installing yay
+su someuser
+cd /tmp
+git clone https://aur.archlinux.org/yay.git
+cd yay && makepkg -si

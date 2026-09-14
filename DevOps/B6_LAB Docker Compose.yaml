@@ -1,0 +1,37 @@
+version: '3.5'
+volumes:
+  sqlvolume:
+    external: true
+
+services:
+  mysql-server:
+    image: mysql
+    container_name: mysql-db-dev
+    volumes:
+      - sqlvolume:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+     - MYSQL_ROOT_PASSWORD=123456
+     - MYSQL_DATABASE=userapidb
+    networks:
+      bridge5000:
+        ipv4_address: 172.31.0.3
+  webapp:
+    environment:
+      - DB_HOST=mysql-server
+    build: /home/zkt/UsersServie/apiusers
+    container_name: nodejs-api-dev
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - bridge5000
+    depends_on:
+      - mysql-server
+    links:
+      - mysql-server
+      
+      
+networks:
+  bridge5000:

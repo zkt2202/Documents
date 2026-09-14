@@ -1,0 +1,4 @@
+[masters]
+10.211.55.7  ansible_user=zkt
+#192.168.22.22:2222  ansible_user=zkt
+#192.168.22.23:2222  ansible_user=zkt

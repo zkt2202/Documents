@@ -1,0 +1,26 @@
+- name: Test variable
+  hosts: webserver
+  gather_facts: true
+
+  tasks:
+    - name: " Server  info: "
+      debug:
+        #msg: "Target system (Web server) IP= {{inventory_hostname}}"
+        #var: inventory_hostname
+        #var: ntp_server['IP'], ntp_port[1], mysql_port
+        var: ntp_server['IP'], httpd_port[1], mysql_port
+    - name: Check uptime target server
+      shell: uptime
+      register: output
+    - name: "Show uptime from shell"
+      debug:
+        var: output
+  vars:
+    ntp_servrer:
+      IP: 192.168.1.1
+      ntp_port: "UDP 123"
+    httpd_port:
+      - 80
+      - 443
+  vars_files:
+    - ./vars/dbserver

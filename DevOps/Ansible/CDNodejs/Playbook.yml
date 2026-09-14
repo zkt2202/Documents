@@ -1,0 +1,43 @@
+- hosts: websrv
+  become: true
+  vars:
+   project_path: /var/www/nodejs
+  vars_files:
+  - token.yml
+#   gitlab_username: nodejs1_token
+#   gitlab_deploy_token: yPjNfszcyeNiSPgeAyPB
+  pre_tasks:
+   - name: "apt-get update"
+     apt:
+       update_cache: yes
+       cache_valid_time: 3600
+  roles: 
+  - geerlingguy.nodejs
+  tasks:
+  - name: Install PM2
+    npm:
+      name: pm2
+      global: yes
+  - name: Delete old pm2 process
+    command: pm2 delete nodejs
+    ignore_errors: yes
+  - name: Remove Folder
+    file:
+     path: "{{project_path}}"
+     state: absent
+  - name: Create new folder
+    file:
+     path: "{{project_path}}"
+     mode: 0755
+     recurse: yes
+     state: directory
+  - name: clone project A git repo
+    git:
+     repo: 'https://{{gitlab_username}}:{{gitlab_deploy_token}}@gitlab.com/harlock222/nodejs1.git'
+     dest: "{{project_path}}"
+  - name: Install nodejs lib
+    npm:
+      path: "{{project_path}}"
+      state: present
+  - name: Run PM2 app.js
+    command: pm2 start "{{project_path}}/app.js" --name nodejs

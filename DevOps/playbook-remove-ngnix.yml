@@ -1,0 +1,33 @@
+- name: Test install nginx
+  hosts: all
+  # use privilege (default : root)
+  become: yes
+  # method to use privilege
+  become_method: sudo
+  gather_facts: true
+  tasks:
+    - name: "Show ansible fact:"
+      debug:
+        var: ansible_facts['distribution']
+
+    - name: install NGINX on Ubuntu
+      block:
+        - name: stop nginx
+          service:
+              name: nginx
+              state: stopped
+        - name: ensure nginx is not installed
+          apt: name=nginx state=absent
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+
+    - name: install NGINX on Centos
+      block:
+        - name: stop nginx
+          service:
+              name: nginx
+              state: stopped
+        - name: ensure nginx is not installed
+          yum: name=nginx state=absent
+      when: ansible_facts['distribution'] == "CentOS"
+   

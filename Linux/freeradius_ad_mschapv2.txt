@@ -1,0 +1,319 @@
+# Install debian 11
+
+# Install samba kerberos and dns utils
+sudo apt-get install samba krb5-user winbind bind9-utils libnss-winbind
+
+# Modify the ntp time so that it match to AD time server.
+
+# Modify kerberos to current domain
+sudo mv /etc/krb5.conf /etc/krb5.orig
+sudo bash -c "cat << EOF > /etc/krb5.conf
+[libdefaults]
+    default_realm = EXAMPLE.BIZ
+[realms]
+    EXAMPLE.BIZ = {
+        kdc = ad1.example.biz
+        kdc = ad2.example.biz
+        admin_server = ad1.example.biz
+    }
+[domain_realm]
+    .example.biz = EXAMPLE.BIZ
+    example.biz = EXAMPLE.BIZ
+EOF"
+
+# Prepration before the joinning
+sudo mv /etc/samba/smb.conf /etc/samba/smb.orig
+sudo bash -c "cat << EOF > /etc/samba/smb.conf
+[global]
+	workgroup = EXAMPLE
+	security = ads
+	winbind user default domain = yes
+	realm = EXAMPLE.BIZ
+	password server = ad1.example.biz
+EOF"
+
+# Testing kerberos connection
+sudo kinit ouadmin
+## fill in password after above command
+## it should not return anything if both account and password is correct.
+
+# Check the kerberos connection
+sudo klist
+
+# Process to join AD
+sudo net ads -k join
+
+# Run the check when server is joined ad
+ntlm_auth --request-nt-key --allow-mschapv2 --domain=example.biz --username=djohn --password=<password>
+
+# Install freeradius and needed library
+sudo apt-get install -y freeradius python3-pip
+
+# Process to install Root CA
+sudo cp /home/sysadmin/example_CA.cert /usr/local/share/ca-certificates
+sudo update-ca-certificates
+
+# Process to create server certificates
+sudo mkdir /etc/freeradius/3.0/ssl
+sudo cp /home/sysadmin/example_CA.* /etc/freeradius/3.0/ssl
+
+sudo openssl genrsa -out /etc/freeradius/3.0/ssl/peap.example.biz.key 2048
+
+# Create SSL config file.
+sudo bash -c 'cat << EOF > /etc/freeradius/3.0/ssl/config.conf
+[ PEAP ]
+extendedKeyUsage = 1.3.6.1.5.5.7.3.2
+extendedKeyUsage = 1.3.6.1.5.5.7.3.1
+[ clientAuth ]
+extendedKeyUsage = 1.3.6.1.5.5.7.3.2
+[ serverAuth ]
+extendedKeyUsage = 1.3.6.1.5.5.7.3.1
+[ req ]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+[ req_distinguished_name ]
+C = VN
+ST = Hochiminh
+L = Hochiminh
+O = example-int
+OU = IT_Dept
+CN = example.biz
+[ v3_req ]
+keyUsage = keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[ alt_names ]
+DNS.1 = peap.example.biz
+DNS.2 = wifi.example.biz
+EOF'
+
+# Create CSR file based on key and configuration.
+sudo openssl req -new\
+ -key /etc/freeradius/3.0/ssl/peap.example.biz.key\
+ -out /etc/freeradius/3.0/ssl/peap.example.biz.csr\
+ -extensions PEAP\
+ -config /etc/freeradius/3.0/ssl/config.conf
+
+# Test the CSR file
+sudo openssl req -in /etc/freeradius/3.0/ssl/peap.example.biz.csr -noout -text
+
+# Create server certificate
+sudo openssl x509 -req -in /etc/freeradius/3.0/ssl/peap.example.biz.csr\
+ -CA /etc/freeradius/3.0/ssl/example_CA.crt\
+ -CAkey /etc/freeradius/3.0/ssl/example_CA.key\
+ -CAcreateserial\
+ -out /etc/freeradius/3.0/ssl/peap.example.biz.crt\
+ -days 365 
+
+# Run the SSL checking.
+sudo openssl x509 -in /etc/freeradius/3.0/ssl/peap.example.biz.crt -text -noout
+
+# Set correct permission.
+sudo chmod 600 /etc/freeradius/3.0/ssl/*
+sudo chown -R freerad:freerad /etc/freeradius/3.0/ssl
+
+# Process script to requery AD database and return VLANID
+# Install python ldap library
+sudo python3 -m pip install ldap3
+
+# Create script file
+sudo mkdir /etc/freeradius/3.0/scripts
+sudo bash -c "cat << EOF > /etc/freeradius/3.0/scripts/adQuery.py
+import sys
+import ldap3
+
+def main():
+    # return erroe when there is no agrument
+    if len(sys.argv) < 1:
+        return 5
+    # set variable from agrument
+    sam = sys.argv[1]
+    # set variable
+    bind_dn = 'cn=Searcher,cn=Users,dc=example,dc=biz'
+    bind_passwd = '##########'
+    base_dn = 'ou=users,dc=example,dc=biz'
+    base_vlan_file = '/etc/freeradius/3.0/scripts/vlan_info.txt'
+    # Process to connect and query data from AD with variable
+    try:
+        ad_servers = ldap3.Server('ad1.example.biz', port=636, use_ssl=True)
+        ad_connect = ldap3.Connection(ad_servers, bind_dn, bind_passwd, auto_bind=True)
+    except:
+        return -1
+    # Process to search department using login account (sam)
+    try:
+        ad_connect.search(
+            base_dn,
+            '(&(objectclass=user)(sAMAccountName=%s))' % sam,
+            attributes=['department','description']
+        )
+    except:
+        return -1
+    # if there is no user name then return error
+    if len(ad_connect.entries) == 0:
+        return 5
+    # get department from attribute department or description.
+    result = str(ad_connect.entries[0].department.value) if ad_connect.entries[0].department else str(ad_connect.entries[0].description.value)
+    # Read and add vlan information into dictionary
+    data = {}
+    with open(base_vlan_file) as f:
+        for line in f:
+            (k,v) = line.split(",")
+            data[k] = int(v)
+    # Get vlan id from data dictionary
+    try:
+        vlan_id = data.get(result)
+    # if there is no match in dictionary, return default vlan_id
+    except:
+        vlan_id = '10'
+    print('Tunnel-Type = VLAN')
+    print('Tunnel-Medium-Type = 6')
+    print('Tunnel-Private-Group-Id = ' + vlan_id)
+    return 0
+
+if __name__ == '__main__':
+    main()
+EOF"
+
+# Create data file which define vlan id based on department.
+sudo bash -c "cat << EOF > /etc/freeradius/3.0/scripts/vlan_info.txt
+Accounting,10
+HR,11
+Sale,12
+EOF"
+
+# Do some setting which allow script to run.
+sudo bash -c "cat << EOF > /etc/freeradius/3.0/mods-enabled/adQuery
+exec ad_query {
+    wait = yes
+    program = '/usr/bin/python3 /etc/freeradius/3.0/scripts/adQuery.py %{User-Name}'
+    input_pairs = request
+    output_pairs = reply
+    shell_escape = yes
+    timeout = 10
+}
+EOF"
+
+# Next is creating a way to bypass from freeradius to ntlm_auth command which will return user identification.
+sudo rm /etc/freeradius/3.0/mods-enabled/mschap
+sudo bash -c "cat << EOF > /etc/freeradius/3.0/mods-enabled/mschap
+mschap {
+    use_mppe = yes
+    require_encryption = yes
+    require_strong = yes
+    ntlm_auth = '/usr/bin/ntlm_auth --request-nt-key --allow-mschapv2 --username=%{%{Stripped-User-Name}:-%{%{User-Name}:-None}} --challenge=%{mschap:Challenge:-00} --nt-response=%{mschap:NT-Response:-00}'
+}
+EOF"
+
+# Setup server for accepting request.
+sudo rm /etc/freeradius/3.0/sites-enabled/default
+sudo bash -c "cat << EOF > /etc/freeradius/3.0/sites-enabled/mydefault
+server default {
+	listen {
+		ipaddr = *
+		type = auth
+		port = 1812
+}
+	listen {
+		ipaddr = *
+		type = acct
+		port = 1813
+	}
+	authorize {
+		suffix
+		eap
+		pap
+		mschap
+		expiration
+		logintime
+	}
+	authenticate {
+		Auth-Type PAP {
+			pap
+		}
+		Auth-Type EAP {
+			eap
+		}
+		Auth-Type MS-CHAP {
+			mschap
+		}
+	}
+	preacct {
+		preprocess
+		acct_unique
+	}
+	accounting {
+		detail
+		radutmp
+		exec
+		attr_filter.accounting_response
+	}
+	session {
+		radutmp
+	}
+	post-auth {
+		exec
+		ad_query
+		update {
+			&reply: += &session-state:
+		}
+		Post-Auth-Type REJECT {
+			attr_filter.access_reject
+		}
+	}
+}
+EOF"
+
+# Setting up EAP with cerficate.
+sudo rm /etc/freeradius/3.0/mods-enabled/eap
+sudo bash -c "cat << EOF > /etc/freeradius/3.0/mods-enabled/eap
+eap {
+	default_eap_type = peap
+	timer_expire = 60
+	ignore_unknown_eap_types = no
+	cisco_accounting_username_bug = no
+	max_sessions = ${max_requests}
+	tls-config tls-common {
+		private_key_file = /etc/freeradius/3.0/ssl/peap.example.biz.key
+		certificate_file = /etc/freeradius/3.0/ssl/peap.example.biz.crt
+		ca_file = /etc/freeradius/3.0/ssl/OutsourceIT_CA.crt
+		dh_file = ${certdir}/dh
+		random_file = /dev/urandom
+		ca_path = ${cadir}
+		cipher_list = "DEFAULT"
+		cipher_server_preference = no
+		tls_min_version = "1.0"
+		tls_max_version = "1.2"
+		ecdh_curve = "prime256v1"
+	}
+	peap {
+		tls = tls-common
+		default_eap_type = mschapv2
+		copy_request_to_tunnel = no
+		virtual_server = "inner-tunnel"
+	}
+}
+EOF"
+
+# Now setup client that can access this service
+echo -e "client wifi-controller {\n\
+    ipaddr = 192.169.0.252\n\
+    secret = myPassword0\n\
+}" | sudo tee -a /etc/freeradius/3.0/clients.conf > /dev/null
+
+# Add "freerad" user to "winbindd_priv" group which will be able to reach "winbind" program.
+sudo usermod -a -G winbindd_priv freerad
+sudo chown root:winbindd_priv /var/lib/samba/winbindd_privileged/
+
+# Restart freeradius service
+sudo systemctl restart freeradius.service
+
+# Incase need to run debug.
+sudo systemctl stop freeradius.service
+sudo freeradius -X
+
+# Run the test.
+radtest -t mschap djohn <password> localhost 0 <freeradius secret> 
+
+# On the wifi controller, setup a new SSID with freeradius authentication and dynamic vlan
+
+# On laptop, simply add Root_CA certificate to Trusted Root CA, then connect to new SSID with your domain account.

@@ -1,0 +1,80 @@
+- hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  vars:
+    reboot_connect_timeout: 5
+    reboot_post_reboot_delay: 10
+    reboot_timeout: 720
+
+  pre_tasks:
+    # Upgrade RHEL family OS packages
+    - name: Upgrade RHEL Family OS packages
+      yum:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    # Debian Family upgrade
+    - name: Update repositories cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Update all packages to their latest version
+      apt:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: Upgrade the OS (apt-get dist-upgrade)
+      apt:
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: Reboot host
+      reboot:
+        connect_timeout: "{{ reboot_connect_timeout }}"
+        post_reboot_delay: "{{ reboot_post_reboot_delay }}"
+        reboot_timeout: "{{ reboot_timeout }}"
+
+    - name: Remove swap from /etc/fstab
+      lineinfile:
+        dest: /etc/fstab
+        regexp: "^.* swap .*$"
+        state: absent
+
+    - name: create file rc.local disable swap
+      file:
+        path: "/etc/rc.local"
+        state: "touch"
+        mode: a+x
+
+    - name: Add content in file rc.local disable swap
+      blockinfile:
+        path: "/etc/rc.local"
+        marker: ""
+        block: |
+          #!/bin/bash
+          swapoff -a
+          systemctl start kubelet
+
+    - name: Remove blank lines blockinfile put in
+      lineinfile:
+        path: /etc/rc.local
+        state: absent
+        regexp: "^$"
+
+    - name: modprobe
+      shell: |
+        sudo modprobe overlay
+        sudo modprobe br_netfilter
+    - name: Apply new settings
+      command: sudo sysctl --system
+    - name: disable swap
+      shell: |
+        sudo swapoff -a
+        sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+    - name: Unconditionally shut down the machine with all defaults
+      community.general.shutdown:

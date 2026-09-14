@@ -1,0 +1,20 @@
+version:  '3.5'
+
+services:
+  webapi:
+    image:  mysql
+    container_name:  mysql-db-dev
+    volumes:
+      - sqlvolume:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+     - MYSQL_ROOT_PASSWORD=123456
+     - MYSQL_DATABASE=userapidb
+    networks:
+      bridge500:
+        ipv4_address:  "177.31.0.2"
+
+networks:
+  bridge500:
+   external:  true

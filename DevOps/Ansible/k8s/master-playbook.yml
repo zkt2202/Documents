@@ -1,0 +1,21 @@
+
+- name: Configuration of master node
+  hosts: masters
+  tasks:
+    - name: initialize K8S cluster
+      shell: kubeadm init --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.100.5 --ignore-preflight-errors=all
+
+    - name: create .kube directoryi and copy kube config file
+      shell: "{{ item }}"
+      loop:
+        -  mkdir -p $HOME/.kube
+        -  cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        - chown $(id -u):$(id -g) $HOME/.kube/config
+
+    - name: install Pod network
+      become: yes
+      shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml >> pod_network_setup.txt
+      args:
+        chdir: $HOME
+        creates: pod_network_setup.txt
+

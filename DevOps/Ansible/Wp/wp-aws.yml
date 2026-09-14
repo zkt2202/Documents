@@ -1,0 +1,214 @@
+---
+- name: Install LAMP stack and WordPress
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Update packages
+      yum:
+        name: '*'
+        state: latest
+        update_cache: yes
+
+    - name: Install Apache
+      package:
+        name: httpd
+        state: present
+
+    - name: Start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Install MariaDB
+      package:
+        name: mariadb-server
+        state: present
+
+    - name: Start MariaDB service
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Enable php72 and epel repositories
+      become: yes
+      shell: amazon-linux-extras enable php7.2 epel
+
+    - name: Install PHP
+      package:
+        name: php
+        state: present
+
+    - name: Install PHP MySQLi extension
+      package:
+        name: php-mysqlnd
+        state: present
+
+    - name: Add ec2-user to apache group
+      user:
+        name: wp-user
+        groups: apache
+        append: yes
+
+    - name: Set ownership for /var/www/ directory
+      file:
+        path: /var/www
+        owner: wp-user
+        group: apache
+        state: directory
+        recurse: yes
+
+    - name: Set directory permissions
+      file:
+        path: /var/www
+        owner: root
+        group: apache
+        mode: '2775'
+        recurse: yes
+        state: directory
+
+    - name: Find all directories in /var/www
+      find:
+        paths: /var/www
+        file_type: directory
+      register: directories_to_set_permissions
+
+    - name: Set permissions for directories in /var/www
+      file:
+        path: "{{ item.path }}"
+        mode: "2775"
+      with_items: "{{ directories_to_set_permissions.files }}"
+
+    - name: Find all files in /var/www
+      find:
+        paths: /var/www
+        file_type: file
+      register: files_to_set_permissions
+
+    - name: Set permissions for files in /var/www
+      file:
+        path: "{{ item.path }}"
+        mode: "0664"
+      with_items: "{{ files_to_set_permissions.files }}"
+
+    - name: Install pymysql module for Python 3
+      package:
+        name: python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Install pymysql module
+      pip:
+        name: pymysql
+        state: present
+        executable: pip3
+
+    - name: Create MySQL database
+      mysql_db:
+        name: wordpressdatabase
+        state: present
+      become: true
+      become_user: root
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Create MySQL user and give it privileges
+      mysql_user:
+        name: sanjeebuser
+        password: sanjeebpass
+        priv: "wordpressdatabase.*:ALL"
+        state: present
+        host: localhost
+      become: true
+      become_user: root
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Flush MySQL privileges
+      command: mysql -e "FLUSH PRIVILEGES;"
+      become: true
+      become_user: root
+
+    - name: Download WordPress files
+      get_url:
+        url: "https://wordpress.org/latest.tar.gz"
+        dest: "/tmp/latest.tar.gz"
+        mode: "0644"
+
+    - name: Extract WordPress from archive
+      unarchive:
+        src: "/tmp/latest.tar.gz"
+        dest: "/var/www/html"
+        remote_src: yes
+        owner: ec2-user
+        group: apache
+        mode: "0640"
+
+    - name: Copy WordPress contents
+      copy:
+        src: /var/www/html/wordpress/
+        dest: /var/www/html/
+        remote_src: yes
+
+    - name: Rename wp-config-sample.php to wp-config.php
+      command: mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+      args:
+        creates: "/var/www/html/wp-config.php"
+
+    - name: Replace database name in wp-config.php
+      replace:
+        path: "/var/www/html/wp-config.php"
+        regexp: "database_name_here"
+        replace: "wordpressdatabase"
+
+    - name: Replace database username in wp-config.php
+      replace:
+        path: "/var/www/html/wp-config.php"
+        regexp: "username_here"
+        replace: "sanjeebuser"
+
+    - name: Replace database password in wp-config.php
+      replace:
+        path: "/var/www/html/wp-config.php"
+        regexp: "password_here"
+        replace: "sanjeebpass"
+
+    - name: Set directory permissions
+      file:
+        path: /var/www
+        owner: root
+        group: apache
+        mode: '2775'
+        recurse: yes
+        state: directory
+
+    - name: Find all directories in /var/www
+      find:
+        paths: /var/www
+        file_type: directory
+      register: directories_to_set_permissions
+
+    - name: Set permissions for directories in /var/www
+      file:
+        path: "{{ item.path }}"
+        mode: "2775"
+      with_items: "{{ directories_to_set_permissions.files }}"
+
+    - name: Find all files in /var/www
+      find:
+        paths: /var/www
+        file_type: file
+      register: files_to_set_permissions
+
+    - name: Set permissions for files in /var/www
+      file:
+        path: "{{ item.path }}"
+        mode: "0664"
+      with_items: "{{ files_to_set_permissions.files }}"
+
+    - name: Restart HTTPD service
+      service:
+        name: httpd
+        state: restarted

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: nginx-deployment
+spec:
+ selector:
+  matchLabels:
+   app: nginx #Deploymet se tim ra cac pod co label nay de quan ly
+ replicas: 2 #yeu cau Deploymet chay 2 pod phu hop voi mau Template 
+ template:   #mau template dinh nghia 1 pod duoc tao ra
+  metadata: #thong tin gan vao pod
+   labels:
+     app: nginx   #day la thong tin deployment nhan biet pod de quan ly
+  spec:     #mo ta trang thai pod
+   containers:   #tao 1 container
+   - name: nginx  #co ten la nginx
+     image: nginx:1.27   # chay imagge nginx:1.14.2 tren docker hub
+     ports:
+     - containerPort: 80  #container chay port 80
+

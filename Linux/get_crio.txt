@@ -1,0 +1,309 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ARCH_AMD64=amd64
+ARCH_ARM64=arm64
+ARCH_PPC64LE=ppc64le
+ARCH_S390X=s390x
+ARCH=
+VERSION=
+GCB_URL=https://storage.googleapis.com/cri-o
+
+usage() {
+    printf "Usage: %s [-a ARCH] [ -t TAG|SHA ] [ -b BUCKET ] [ -h ]\n\n" "$(basename "$0")"
+    echo "Possible arguments:"
+    printf "  -a\tArchitecture to retrieve (defaults to the local system)\n"
+    printf "  -t\tVersion tag or full length SHA to be used (defaults to the latest available main)\n"
+    printf "  -b\tName of the GCS bucket for downloading artifacts (defaults to 'cri-o')\n"
+    printf "  -h\tShow this help message\n"
+}
+
+uninstall() {
+    while read -r file; do
+        echo "$file will be uninstalled."
+        rm -f "$file"
+        echo "$file have been uninstalled."
+    done <~/.crio-install
+
+    rm -f ~/.crio-install
+    echo "uninstall is finished!"
+}
+
+parse_args() {
+    echo "Welcome to the CRI-O install script!"
+
+    while getopts 'a:b:t:h:u' OPTION; do
+        case "$OPTION" in
+        a)
+            ARCH="$OPTARG"
+            echo "Using architecture: $ARCH"
+            ;;
+        t)
+            VERSION="$OPTARG"
+            echo "Using version: $VERSION"
+            ;;
+        b)
+            GCB_URL="https://storage.googleapis.com/$OPTARG"
+            echo "Using GCS bucket: gs://$OPTARG"
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+        u)
+            uninstall
+            exit 0
+            ;;
+        ?)
+            usage
+            exit 1
+            ;;
+        esac
+    done
+
+    if [[ $ARCH == "" ]]; then
+        LOCAL_ARCH=$(uname -m)
+        if [[ "$LOCAL_ARCH" == x86_64 ]]; then
+            ARCH=$ARCH_AMD64
+        elif [[ "$LOCAL_ARCH" == aarch64 ]]; then
+            ARCH=$ARCH_ARM64
+        elif [[ "$LOCAL_ARCH" == "$ARCH_PPC64LE" ]]; then
+            ARCH=$ARCH_PPC64LE
+        elif [[ "$LOCAL_ARCH" == "$ARCH_S390X" ]]; then
+            ARCH=$ARCH_S390X
+        else
+            echo "Unsupported local architecture: $LOCAL_ARCH"
+            exit 1
+        fi
+        echo "No architecture provided, using: $ARCH"
+    fi
+}
+
+verify_requirements() {
+    CMDS=(curl jq tar)
+    echo "Checking if all commands are available: ${CMDS[*]}"
+    for CMD in "${CMDS[@]}"; do
+        if ! command -v "$CMD" >/dev/null; then
+            echo "Command $CMD not available but required"
+            exit 1
+        fi
+    done
+}
+
+curl_retry() {
+    curl -sSfL --retry 5 --retry-delay 3 "$@"
+}
+
+latest_version() {
+    if [[ $VERSION != "" ]]; then
+        return
+    fi
+
+    echo Searching for latest version via marker file
+    COMMIT=$(curl_retry "$GCB_URL/latest-bundle-main.txt")
+    if [[ "$COMMIT" != "" ]]; then
+        VERSION=$COMMIT
+        echo "Found latest version $VERSION"
+    else
+        echo "Unable to find latest version"
+        exit 1
+    fi
+}
+
+prepare() {
+    parse_args "$@"
+    verify_requirements
+    latest_version
+}
+
+prepare "$@"
+
+TARBALL=cri-o.$ARCH.$VERSION.tar.gz
+SPDX=$TARBALL.spdx
+BASE_URL=$GCB_URL/artifacts
+
+TMPDIR="$(mktemp -d)"
+trap 'rm -rf -- "$TMPDIR"' EXIT
+
+if command -v cosign >/dev/null; then
+    echo "Found cosign, verifying signatures"
+    pushd "$TMPDIR" >/dev/null
+
+    FILES=(
+        "$TARBALL"
+        "$TARBALL.sig"
+        "$TARBALL.cert"
+        "$SPDX"
+        "$SPDX.sig"
+        "$SPDX.cert"
+    )
+    for FILE in "${FILES[@]}"; do
+        echo "Downloading $FILE"
+        curl_retry "$BASE_URL/$FILE" -o "$FILE"
+    done
+
+    GIT_REF=refs/heads/main
+
+    BLOBS=(
+        "$TARBALL"
+        "$SPDX"
+    )
+    for BLOB in "${BLOBS[@]}"; do
+        echo "Verifying blob $BLOB"
+        COSIGN_EXPERIMENTAL=1 cosign verify-blob "$BLOB" \
+            --certificate-identity "https://github.com/cri-o/packaging/.github/workflows/obs.yml@$GIT_REF" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-github-workflow-repository cri-o/packaging \
+            --certificate-github-workflow-ref "$GIT_REF" \
+            --signature "$BLOB.sig" \
+            --certificate "$BLOB.cert"
+    done
+
+    tar xfz "$TARBALL"
+    TARBALL_DIR=cri-o
+
+    if command -v bom >/dev/null; then
+        echo "Found bom tool, verifying bill of materials"
+        bom validate -e "$SPDX" -d "$TARBALL_DIR"
+    fi
+
+    pushd "$TARBALL_DIR"
+else
+    TARBALL_URL=$BASE_URL/$TARBALL
+    echo "Downloading $TARBALL_URL to $TMPDIR"
+    curl_retry "$TARBALL_URL" | tar xfz - --strip-components=1 -C "$TMPDIR"
+    pushd "$TMPDIR"
+fi
+
+echo Installing CRI-O
+
+# In this section we include the contents of templates/latest/cri-o/bundle/install
+
+# INCLUDE
+set -ex
+
+DESTDIR=${DESTDIR:-}
+PREFIX=${PREFIX:-/usr/local}
+ETCDIR=${ETCDIR:-/etc}
+LIBEXECDIR=${LIBEXECDIR:-/usr/libexec}
+LIBEXEC_CRIO_DIR=${LIBEXEC_CRIO_DIR:-$LIBEXECDIR/crio}
+ETC_CRIO_DIR=${ETC_CRIO_DIR:-$ETCDIR/crio}
+CONTAINERS_DIR=${CONTAINERS_DIR:-$ETCDIR/containers}
+CONTAINERS_REGISTRIES_CONFD_DIR=${CONTAINERS_REGISTRIES_CONFD_DIR:-$CONTAINERS_DIR/registries.conf.d}
+CNIDIR=${CNIDIR:-$ETCDIR/cni/net.d}
+BINDIR=${BINDIR:-$PREFIX/bin}
+MANDIR=${MANDIR:-$PREFIX/share/man}
+OCIDIR=${OCIDIR:-$PREFIX/share/oci-umount/oci-umount.d}
+BASHINSTALLDIR=${BASHINSTALLDIR:-$PREFIX/share/bash-completion/completions}
+FISHINSTALLDIR=${FISHINSTALLDIR:-$PREFIX/share/fish/completions}
+ZSHINSTALLDIR=${ZSHINSTALLDIR:-$PREFIX/share/zsh/site-functions}
+OPT_CNI_BIN_DIR=${OPT_CNI_BIN_DIR:-/opt/cni/bin}
+
+# Adjust SYSCONFIGDIR if we're running on debian based distributions
+if dpkg -l >/dev/null 2>&1; then
+    SYSCONFIGDIR=${SYSCONFIGDIR:-$ETCDIR/default}
+    sed -i "s;sysconfig/crio;default/crio;g" etc/crio
+else
+    SYSCONFIGDIR=${SYSCONFIGDIR:-$ETCDIR/sysconfig}
+fi
+
+# Update systemddir based on OS
+source /etc/os-release
+if { [[ "${ID}" == "fedora" ]] && [[ "${VARIANT_ID}" == "coreos" ]]; } ||
+    [[ "${ID}" == "rhcos" ]]; then
+    SYSTEMDDIR=${SYSTEMDDIR:-/etc/systemd/system}
+else
+    SYSTEMDDIR=${SYSTEMDDIR:-$PREFIX/lib/systemd/system}
+fi
+
+SELINUX=
+if selinuxenabled 2>/dev/null; then
+    SELINUX=-Z
+fi
+ARCH=${ARCH:-amd64}
+
+install $SELINUX -d -m 755 "$DESTDIR$CNIDIR"
+install $SELINUX -D -m 755 -t "$DESTDIR$OPT_CNI_BIN_DIR" cni-plugins/*
+install $SELINUX -D -m 644 -t "$DESTDIR$CNIDIR" contrib/10-crio-bridge.conflist.disabled
+install $SELINUX -d -m 755 "$DESTDIR$LIBEXEC_CRIO_DIR"
+install $SELINUX -D -m 755 -t "$DESTDIR$LIBEXEC_CRIO_DIR" bin/conmon
+install $SELINUX -D -m 755 -t "$DESTDIR$LIBEXEC_CRIO_DIR" bin/conmonrs
+install $SELINUX -D -m 755 -t "$DESTDIR$LIBEXEC_CRIO_DIR" bin/crun
+install $SELINUX -D -m 755 -t "$DESTDIR$LIBEXEC_CRIO_DIR" bin/runc
+install $SELINUX -d -m 755 "$DESTDIR$BASHINSTALLDIR"
+install $SELINUX -d -m 755 "$DESTDIR$FISHINSTALLDIR"
+install $SELINUX -d -m 755 "$DESTDIR$ZSHINSTALLDIR"
+install $SELINUX -d -m 755 "$DESTDIR$CONTAINERS_REGISTRIES_CONFD_DIR"
+install $SELINUX -D -m 755 -t "$DESTDIR$BINDIR" bin/crio
+install $SELINUX -D -m 755 -t "$DESTDIR$BINDIR" bin/pinns
+install $SELINUX -D -m 755 -t "$DESTDIR$BINDIR" bin/crictl
+install $SELINUX -D -m 644 -t "$DESTDIR$ETCDIR" etc/crictl.yaml
+install $SELINUX -D -m 644 -t "$DESTDIR$OCIDIR" etc/crio-umount.conf
+install $SELINUX -D -m 644 -t "$DESTDIR$SYSCONFIGDIR" etc/crio
+install $SELINUX -D -m 644 -t "$DESTDIR$ETC_CRIO_DIR" contrib/policy.json
+install $SELINUX -D -m 644 -t "$DESTDIR$ETC_CRIO_DIR/crio.conf.d" etc/10-crio.conf
+install $SELINUX -D -m 644 -t "$DESTDIR$MANDIR/man5" man/crio.conf.5
+install $SELINUX -D -m 644 -t "$DESTDIR$MANDIR/man5" man/crio.conf.d.5
+install $SELINUX -D -m 644 -t "$DESTDIR$MANDIR/man8" man/crio.8
+install $SELINUX -D -m 644 -t "$DESTDIR$BASHINSTALLDIR" completions/bash/crio
+install $SELINUX -D -m 644 -t "$DESTDIR$FISHINSTALLDIR" completions/fish/crio.fish
+install $SELINUX -D -m 644 -t "$DESTDIR$ZSHINSTALLDIR" completions/zsh/_crio
+install $SELINUX -D -m 644 -t "$DESTDIR$SYSTEMDDIR" contrib/crio.service
+install $SELINUX -D -m 644 -t "$DESTDIR$CONTAINERS_REGISTRIES_CONFD_DIR" contrib/registries.conf
+
+# Update the DESTDIR in the CRI-O configuration
+sed -i 's;/usr/bin;'"$DESTDIR$BINDIR"';g' "$DESTDIR$ETC_CRIO_DIR/crio.conf.d/10-crio.conf"
+sed -i 's;/usr/libexec;'"$DESTDIR$LIBEXECDIR"';g' "$DESTDIR$ETC_CRIO_DIR/crio.conf.d/10-crio.conf"
+sed -i 's;/etc/crio;'"$DESTDIR$ETC_CRIO_DIR"';g' "$DESTDIR$ETC_CRIO_DIR/crio.conf.d/10-crio.conf"
+
+touch ~/.crio-install
+cat <<EOF | tee ~/.crio-install
+$DESTDIR$OPT_CNI_BIN_DIR/*
+$DESTDIR$CNIDIR/10-crio-bridge.conflist.disabled
+$DESTDIR$LIBEXEC_CRIO_DIR/conmon
+$DESTDIR$LIBEXEC_CRIO_DIR/conmonrs
+$DESTDIR$LIBEXEC_CRIO_DIR/crun
+$DESTDIR$LIBEXEC_CRIO_DIR/runc
+$DESTDIR$BINDIR/crio
+$DESTDIR$BINDIR/pinns
+$DESTDIR$BINDIR/crictl
+$DESTDIR$ETCDIR/crictl.yaml
+$DESTDIR$OCIDIR/crio-umount.conf
+$DESTDIR$SYSCONFIGDIR/crio
+$DESTDIR$ETC_CRIO_DIR/policy.json
+$DESTDIR$ETC_CRIO_DIR/crio.conf.d/10-crio.conf
+$DESTDIR$MANDIR/man5/crio.conf.5
+$DESTDIR$MANDIR/man5/crio.conf.d.5
+$DESTDIR$MANDIR/man8/crio.8
+$DESTDIR$BASHINSTALLDIR/crio
+$DESTDIR$FISHINSTALLDIR/crio.fish
+$DESTDIR$ZSHINSTALLDIR/_crio
+$DESTDIR$SYSTEMDDIR/crio.service
+$DESTDIR$CONTAINERS_REGISTRIES_CONFD_DIR/registries.conf
+EOF
+
+if [ -n "$SELINUX" ]; then
+    if command -v chcon >/dev/null; then
+        chcon -u system_u -r object_r -t container_runtime_exec_t \
+            "$DESTDIR$BINDIR/crio" \
+            "$DESTDIR$LIBEXEC_CRIO_DIR/crun" \
+            "$DESTDIR$LIBEXEC_CRIO_DIR/runc"
+
+        chcon -u system_u -r object_r -t bin_t \
+            "$DESTDIR$LIBEXEC_CRIO_DIR/conmon" \
+            "$DESTDIR$LIBEXEC_CRIO_DIR/conmonrs" \
+            "$DESTDIR$BINDIR/crictl" \
+            "$DESTDIR$BINDIR/pinns"
+
+        chcon -R -u system_u -r object_r -t bin_t \
+            "$DESTDIR$OPT_CNI_BIN_DIR" \
+            "$DESTDIR$LIBEXEC_CRIO_DIR"
+
+        chcon -R -u system_u -r object_r -t container_config_t \
+            "$DESTDIR$ETC_CRIO_DIR" \
+            "$DESTDIR$OCIDIR/crio-umount.conf"
+
+        chcon -R -u system_u -r object_r -t systemd_unit_file_t \
+            "$DESTDIR$SYSTEMDDIR/crio.service"
+    fi
+fi

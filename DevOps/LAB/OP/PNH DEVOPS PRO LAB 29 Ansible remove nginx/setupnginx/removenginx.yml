@@ -1,0 +1,25 @@
+- name: Test uninstall nginx
+  hosts: all
+  become: true
+  tasks:
+    - name: "Show ansible Facts:"
+      debug:
+        var: ansible_facts['distribution']
+    - name: "Stop service"
+      service:
+        name: nginx
+        state: stopped
+    - name: Remove nginx on Ubuntu
+      apt:
+        name: nginx
+        state: absent
+      when: ansible_facts['distribution'] == "Debian"
+    - name: Remove nginx on Centos
+      yum:
+        name: nginx
+        state: absent
+      when: ansible_facts['distribution'] == "CentOS"
+
+    - name: "Block show err on Ubuntu"
+      debug:
+        var: err

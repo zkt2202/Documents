@@ -1,0 +1,28 @@
+- hosts: Ubuntu
+  become: true 
+  tasks:
+  - name: Ping check host
+    ping: ~
+  - name: Install NGINX on Ubuntu
+    apt: name=nginx update_cache=yes state=latest force_apt_get=yes
+########### Deploy config
+#backup
+#  - name: Backup config HTTP (backup from client)
+ #   command: cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.backup1
+#Deploy
+  #- name: Deploy config httpd
+   # template:
+    # src: "/etc/ansible/config/httpd.conf"
+    # dest: "/etc/httpd/conf/httpd.conf"
+    # owner: root
+    # group: root
+    # mode: 0644
+########### Đẩy code về client
+ # - name: Deploy web file
+  #  template:
+  #   src: "/etc/ansible/config/index.html"
+  #   dest: "/var/www/html/index.html"
+
+########### Khởi động lại apache để áp dụng config
+  - name: Start HTTPD after install
+    service: name=httpd state=restarted

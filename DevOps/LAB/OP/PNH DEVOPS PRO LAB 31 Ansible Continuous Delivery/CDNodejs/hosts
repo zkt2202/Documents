@@ -1,0 +1,2 @@
+[webnginx]
+webCentOs1 ansible_host=192.168.29.107 ansible_user=srd

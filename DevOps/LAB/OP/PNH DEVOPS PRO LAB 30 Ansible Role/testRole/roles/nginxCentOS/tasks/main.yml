@@ -1,0 +1,4 @@
+- name: Test roles
+  yum: name=epel-release state=present
+- name: Install NGINX CentOS
+  yum: name=nginx update_cache=yes state=present

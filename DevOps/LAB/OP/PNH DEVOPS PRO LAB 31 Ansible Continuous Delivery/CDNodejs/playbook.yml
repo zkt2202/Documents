@@ -1,0 +1,14 @@
+---
+- hosts: websrv
+  become: true
+  vars:
+    project_path: /var/www/nodejs
+    gitlab_username: gitlab+deploy-token-1
+    gitlab_deploy_token: gldt-swWaJRWjxaBHJ7G7vH7o
+  roles:
+    - geerlingguy.nodejs
+  tasks:
+    - name: Install PM2
+      npm:
+        name: pm2
+        global: yes

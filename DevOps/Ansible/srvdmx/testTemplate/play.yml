@@ -1,0 +1,5 @@
+- hosts: Ubuntu
+  sudo: yes
+  tasks:
+    - name: Updates apt cache
+      action: apt update_cache=true

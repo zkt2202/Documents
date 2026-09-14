@@ -1,0 +1,42 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Upload File Tutorial</title>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.0.js"></script>
+</head>
+
+<body>
+  <!-- HTML5 Input Form Elements -->
+  <input id="fileupload" type="file" name="fileupload" />
+  <button id="upload-button" onclick="uploadFile()"> Upload </button>
+  <ul id="mylist">
+    <!-- <li><a href="https://www.w3schools.com/jquery/html_append.asp">https://www.w3schools.com/jquery/html_append.asp</a></li> -->
+  </ul>
+
+  <!-- Ajax JavaScript File Upload Logic -->
+  <script>
+    async function uploadFile() {
+      if (!fileupload.files[0]) {
+        return alert("No File Selected!")
+      }
+      
+      let formData = new FormData();
+      formData.append("file", fileupload.files[0]);
+      const result = await fetch('/uploadfile', {
+        method: "POST",
+        body: formData
+      });
+      const body = await result.json()
+      console.log("upload result", body)
+
+      $("#mylist").append(`<li><a href="${body.url}">${body.url}</li>`);
+      alert('The file has been uploaded successfully. ');
+    }
+  </script>
+  <div>
+  <h1> Chuc mung chuyen gia Devops. It's works</h1>
+  </div>
+</body>
+
+</html>

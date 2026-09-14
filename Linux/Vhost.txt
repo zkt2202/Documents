@@ -1,0 +1,35 @@
+#nano /etc/httpd/conf/httpd.conf
+add 
+IncludeOptional vhost/*.conf
+
+#cd /var/www/
+#mkdir -p domain1.com/public_html
+#chown -R apache:apache /var/www/domain1.com/public_html
+#chmod -R 755 /var/www
+#nano domain1.com/public_html/index.html
+
+<html>
+  <head>
+    <title>Welcome to Domain1.com!</title>
+  </head>
+  <body>
+    <h1>Success! The Domain1.com virtual host is working!</h1>
+  </body>
+</html>
+
+
+#nano /etc/httpd/vhost/domain1.com.conf
+
+
+<VirtualHost *:80>
+    ServerName www.domain1.com
+    ServerAlias domain1.com
+    DocumentRoot /var/www/domain1.com/public_html
+    ErrorLog /var/www/domain1.com/error.log
+    CustomLog /var/www/domain1.com/requests.log combined
+</VirtualHost>
+
+
+#systemctl restart httpd 
+ de test chinh sua file host tren client:
+ ip domain.com;

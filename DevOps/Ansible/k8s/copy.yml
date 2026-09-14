@@ -1,0 +1,23 @@
+- hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  vars:
+    reboot_connect_timeout: 5
+    reboot_post_reboot_delay: 15
+    reboot_timeout: 600
+    kubernetes_allow_pods_on_master: true
+  pre_tasks:
+    - name: copying 
+      copy:
+       #src: /etc/rc.local
+        src: ~/Documents/DevOps/Ansible/k8s/rc.local
+        dest: /etc/rc.local        
+        mode: a+x
+        remote_src: false
+    # Reboot after upgrade
+    - name: Reboot host
+      reboot:
+        connect_timeout: "{{ reboot_connect_timeout }}"
+        post_reboot_delay: "{{ reboot_post_reboot_delay }}"
+        reboot_timeout: "{{ reboot_timeout }}"

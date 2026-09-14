@@ -1,0 +1,57 @@
+
+AWS
+│   ├── PNH DEVOPS PRO 2022_Lab1 Tao Account AWS
+│   │   └── PNH DEVOPS PRO 2022_Lab1 Tao Account AWS_page-0001.jpg
+│   ├── PNH DEVOPS PRO 2022_Lab2 IAM EC2
+│   │   ├── PNH DEVOPS PRO 2022_Lab2 IAM EC2_page-0001.jpg
+│   │   └── PNH DEVOPS PRO 2022_Lab2 IAM EC2_page-0002.jpg
+│   ├── PNH DEVOPS PRO 2022_Lab3 IAM MFA
+│   │   └── PNH DEVOPS PRO 2022_Lab3 IAM MFA_page-0001.jpg
+│   ├── PNH DEVOPS PRO 2022_Lab4 IAM Permission
+│   │   └── PNH DEVOPS PRO 2022_Lab4 IAM Permission_page-0001.jpg
+│   ├── PNH DEVOPS PRO 2022_Lab5 VPC NAT GW
+│   │   └── PNH DEVOPS PRO 2022_Lab5 VPC NAT GW_page-0001.jpg
+│   ├── PNH DEVOPS PRO 2022_Lab6 - ROLE Enable Secssion manager
+│   │   ├── PNH DEVOPS PRO 2022_Lab6 - ROLE Enable Secssion manager_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO 2022_Lab6 - ROLE Enable Secssion manager_page-0002.jpg
+│   │   └── PNH DEVOPS PRO 2022_Lab6 - ROLE Enable Secssion manager_page-0003.jpg
+│   ├── PNH DEVOPS PRO 2022_Lab7 Basion host
+│   │   ├── PNH DEVOPS PRO 2022_Lab7 Basion host_page-0001.jpg
+│   │   └── PNH DEVOPS PRO 2022_Lab7 Basion host_page-0002.jpg
+│   ├── PNH DEVOPS PRO 2022_Lab8 Client VPN
+│   │   ├── PNH DEVOPS PRO 2022_Lab8 Client VPN_page-0001.jpg
+│   │   ├── PNH DEVOPS PRO 2022_Lab8 Client VPN_page-0002.jpg
+│   │   ├── PNH DEVOPS PRO 2022_Lab8 Client VPN_page-0003.jpg
+│   │   └── PNH DEVOPS PRO 2022_Lab8 Client VPN_page-0004.jpg
+│   ├── PNH DEVOPS PRO LAB 10 S3 IAM Role
+│   │   ├── PNH DEVOPS PRO LAB 10 S3 IAM Role_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 10 S3 IAM Role_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 11 Mount S3 to EC2
+│   │   ├── PNH DEVOPS PRO LAB 11 Mount S3 to EC2_fix_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 11 Mount S3 to EC2_fix_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 12 Nodejs S3 IAM Roles
+│   │   ├── PNH DEVOPS PRO LAB 12 Nodejs S3 IAM Roles_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 12 Nodejs S3 IAM Roles_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 13 ELB_
+│   │   └── PNH DEVOPS PRO LAB 13 ELB_page-0001.jpg
+│   ├── PNH DEVOPS PRO LAB 14 RDS - NodejsAPI
+│   │   ├── PNH DEVOPS PRO LAB 14 RDS - NodejsAPI_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 14 RDS - NodejsAPI_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 15 Start Service
+│   │   ├── PNH DEVOPS PRO LAB 15 Start Service www_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 15 Start Service www_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 16 Create AMI
+│   │   ├── PNH DEVOPS PRO LAB 16 Create AMI_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 16 Create AMI_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 17 Create AutoScale
+│   │   ├── PNH DEVOPS PRO LAB 17 Create AutoScale group_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 17 Create AutoScale group_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 18 CloudFront
+│   │   ├── PNH DEVOPS PRO LAB 18 CloudFront - New_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 18 CloudFront - New_page-0002.jpg
+│   ├── PNH DEVOPS PRO LAB 19 Tong hop
+│   │   ├── PNH DEVOPS PRO LAB 19 Tong hop OK_page-0001.jpg
+│   │   └── PNH DEVOPS PRO LAB 19 Tong hop OK_page-0002.jpg
+│   └── PNH DEVOPS PRO LAB 9 S3
+│       ├── PNH DEVOPS PRO LAB 9 S3_page-0001.jpg
+│       └── PNH DEVOPS PRO LAB 9 S3_page-0002.jpg

@@ -1,0 +1,37 @@
+Debian 
+
+$ sudo apt update && sudo apt upgrade -y
+$ sudo swapoff -a
+$ sudo sed -i '/ swap / s/^/#/' /etc/fstab
+$ sudo apt install -y kubelet kubeadm kubectl
+$ sudo systemctl enable kubelet
+$ sudo kubeadm init --pod-network-cidr=<your-pod-network-cidr>
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+$ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+RHEL
+
+$ sudo yum update -y
+$ sudo yum install docker -y
+$ sudo systemctl enable docker
+$ sudo systemctl start docker
+$ sudo swapoff -a
+$ sudo sed -i '/ swap / s/^/#/' /etc/fstab
+$ sudo tee /etc/yum.repos.d/kubernetes.repo <<EOF
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+$ sudo yum install -y kubelet kubeadm kubectl
+$ sudo systemctl enable kubelet
+$ sudo kubeadm init --pod-network-cidr=<your-pod-network-cidr>
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+$ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml

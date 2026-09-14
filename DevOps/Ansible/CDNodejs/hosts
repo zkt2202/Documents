@@ -1,0 +1,2 @@
+[websrv]
+webserver ansible_host=192.168.22.131 ansible_user=zkt

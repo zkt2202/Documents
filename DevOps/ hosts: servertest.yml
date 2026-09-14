@@ -1,0 +1,29 @@
+- hosts: servertest 
+  become: true
+  tasks:
+  ########## Cài đặt gói tin httpd và start .
+  - name: Install Apache2
+    yum: name=apache2 update_cache=yes
+  - name: Start apache2 after install
+    service: name=apache2 state=started
+########### Deploy config
+#backup
+  - name: Backup config apache2 (backup from client)
+    command: cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.backup1
+#Deploy
+  - name: Deploy config apache2
+    template:
+     src: "/etc/ansible/config/httpd.conf"
+     dest: "/etc/httpd/conf/httpd.conf"
+     owner: root
+     group: root
+     mode: 0644
+########### Đẩy code về client
+  - name: Deploy web file
+    template:
+     src: "/etc/ansible/config/index.html"
+     dest: "/var/www/html/index.html"
+
+########### Khởi động lại apache để áp dụng config
+  - name: Start apache2 after install
+    service: name=apache2 state=restarted
